@@ -1,16 +1,16 @@
 # Getting started
 ```
-curl -L servr.world | sh
+curl servr.world | sh
 ```
 
 ## Configuration
 `server` sports a few command-line flags which configure its behaviour. To pass those flags use
 ```
-$ curl -L servr.world | sh -s -- <flags>
+$ curl servr.world | sh -s -- <flags>
 ```
 For example to print the list of available flags
 ```
-$ curl -L servr.world | sh -s -- --help
+$ curl servr.world | sh -s -- --help
 Usage of servr:
   -d, --directory string   the directory to serve (default ".")
   -N, --dont-dump          be less verbose and don't dump requests

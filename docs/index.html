@@ -1,10 +1,12 @@
 #!/bin/sh
 
+# <link href="style.css" rel="stylesheet"><h2><div>curl servr.world | sh</div>starts an HTTP server</h2><p><a href="https://github.com/32leaves/servr">Servr</a> is a simple HTTP server that serves files, directories and verbosely logs requests.<br>Running the line above will start an HTTP server by downloading and running the following script:</p><pre>
+
 #
-# This script downloads and starts servr: a simple HTTP server that serves files, directories and verbosely logs requests.
+# This script downloads and starts a simple HTTP server that serves files, directories and verbosely logs requests.
 #
-# run with "curl -L servr.world | sh"
-# 
+# run with "curl servr.world | sh"
+#
 
 export platform="$(uname -s)_$(uname -m)"
 export servr=$HOME/.servr
@@ -45,3 +47,15 @@ fi
 
 # at least we can start servr itself
 exec $servr $@
+
+# </pre><div style="display:none">
+# Why is this called index.html?
+#   I want to re-use GitHub infrastructure, specifically GitHub pages where the index file must
+#   be named index.html.
+#
+# What's with the pre tags?
+#   Because this file is called index.html, GitHub will serve it with an HTML content-type, which
+#   causes the browser to render this script funny. But I want to be easy to read so that people
+#   can understand what's going on here.
+#
+# </div>

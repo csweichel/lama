@@ -1,5 +1,7 @@
 ports:
 - port: 8080
+checkoutLocation: servr
+workspaceLocation: servr
 tasks:
 - command: |
     cd .. &&
