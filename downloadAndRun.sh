@@ -1,8 +1,10 @@
 #!/bin/sh
 
-# This script downloads the latest servr release for the appropriate platform and starts it.
 #
-# run with "curl servr.world | sh"
+# This script downloads and starts servr: a simple HTTP server that serves files, directories and verbosely logs requests.
+#
+# run with "curl -L servr.world | sh"
+# 
 
 export platform="$(uname -s)_$(uname -m)"
 export servr=$HOME/.servr
