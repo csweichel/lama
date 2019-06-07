@@ -3,6 +3,23 @@
 curl -L servr.world | sh
 ```
 
+## Configuration
+`server` sports a few command-line flags which configure its behaviour. To pass those flags use
+```
+$ curl -L servr.world | sh -s -- <flags>
+```
+For example to print the list of available flags
+```
+$ curl -L servr.world | sh -s -- --help
+Usage of servr:
+  -d, --directory string   the directory to serve (default ".")
+  -N, --dont-dump          be less verbose and don't dump requests
+  -D, --dont-serve         don't serve any directy (ignores --directory)
+  -l, --localhost          serve on localhost only
+  -p, --port string        port to serve on (default "8080")
+  -v, --version            prints the version
+```
+
 # Introduction
 Servr is a simple HTTP server that serves files, directories and verbosely logs requests.
 This project has two main qualities:

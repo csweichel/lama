@@ -40,4 +40,6 @@ if [ "$download" = "true" ]; then
 
     chmod +x $servr
 fi
-$servr
+
+# at least we can start servr itself
+exec $servr $@
