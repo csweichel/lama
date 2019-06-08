@@ -1,4 +1,4 @@
-module github.com/32leaves/servr
+module github.com/32leaves/lama
 
 go 1.12
 
