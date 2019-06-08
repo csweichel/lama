@@ -9,6 +9,14 @@ builds:
   - CGO_ENABLED=0
   ldflags:
   - -s -w -X main.build={{.Version}}
+  goos:
+    - linux
+    - darwin
+    - windows
+  goarch:
+    - 386
+    - amd64
+    - arm
 archives:
 - replacements:
     darwin: Darwin

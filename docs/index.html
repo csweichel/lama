@@ -1,30 +1,30 @@
 #!/bin/sh
 
-# <link href="style.css" rel="stylesheet"><h2><div>curl servr.world | sh</div>starts an HTTP server</h2><p><a href="https://github.com/32leaves/servr">Servr</a> is a simple HTTP server that serves files, directories and verbosely logs requests.<br>Running the line above will start an HTTP server by downloading and running the following script:</p><pre>
+# <link href="style.css" rel="stylesheet"><h2><div>curl lama.sh | sh</div>starts a web server</h2><p><a href="https://github.com/32leaves/lama">lama</a> is a simple HTTP server that serves files, directories and verbosely logs requests.<br>Running the line above will start an HTTP server by downloading and running the following script:</p><pre>
 
 #
 # This script downloads and starts a simple HTTP server that serves files, directories and verbosely logs requests.
 #
-# run with "curl servr.world | sh"
+# run with "curl lama.sh | sh"
 #
 
 export platform="$(uname -s)_$(uname -m)"
-export servr=$HOME/.servr
+export lama=$HOME/.lama
 
 export download=true
-if [ ! -f $servr ]; then
+if [ ! -f $lama ]; then
     download=true
 elif [ `which sha256sum` ]; then
     download=false
 
-    export latestChecksum=$(curl --silent -s https://api.github.com/repos/32leaves/servr/releases/latest \
+    export latestChecksum=$(curl --silent -s https://api.github.com/repos/32leaves/lama/releases/latest \
                     | grep browser_download_url \
                     | grep checksums.txt \
                     | cut -d : -f 2,3 \
                     | xargs curl --silent -L \
                     | grep $platform \
                     | cut -d ' ' -f 1)
-    currentChecksum=$(sha256sum $servr | cut -d ' ' -f 1)
+    currentChecksum=$(sha256sum $lama | cut -d ' ' -f 1)
 
     if [ $latestChecksum != $currentChecksum ]; then
         download=true
@@ -35,18 +35,18 @@ else
 fi
 
 if [ "$download" = "true" ]; then
-    echo "Downloading latest servr version"
-    curl --silent -s https://api.github.com/repos/32leaves/servr/releases/latest \
+    echo "Downloading latest lama version"
+    curl --silent -s https://api.github.com/repos/32leaves/lama/releases/latest \
     | grep browser_download_url \
     | grep $platform \
     | cut -d : -f 2,3 \
-    | xargs curl --silent -L --output $servr
+    | xargs curl --silent -L --output $lama
 
-    chmod +x $servr
+    chmod +x $lama
 fi
 
-# at least we can start servr itself
-exec $servr $@
+# at least we can start lama itself
+exec $lama $@
 
 # </pre><div style="display:none">
 # Why is this called index.html?
