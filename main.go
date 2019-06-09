@@ -1,14 +1,35 @@
+// Copyright (c) 2019 Christian Weichel
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 package main
 
 import (
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/spf13/pflag"
 	"net/http"
 	"os"
 	"strings"
 	"text/tabwriter"
 	"time"
+
+	"github.com/fatih/color"
+	"github.com/spf13/pflag"
 )
 
 // version set during build
@@ -56,7 +77,10 @@ func main() {
 	fmt.Printf("This is %s serving %son %s\r\n\r\n", fgLama.Sprint("lama.sh"), fileStatement, addr)
 
 	err := http.ListenAndServe(addr, nil)
-	logError("cannot serve", err)
+	if err != nil {
+		fmt.Printf("%s %s - %s\n", fgError.Sprint("ERROR"), time.Now().Format(time.RFC3339), err.Error())
+		os.Exit(1)
+	}
 }
 
 type debugHandler struct {
@@ -71,11 +95,6 @@ func (h *debugHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	if h.Delegate != nil {
 		h.Delegate.ServeHTTP(resp, req)
 	}
-}
-
-func logError(msg string, err error) {
-	fgError.Print("ERROR")
-	fmt.Printf(" %s - %s\n", time.Now().Format(time.RFC3339), err.Error())
 }
 
 func (h *debugHandler) logRequest(req *http.Request, verbose bool) {
