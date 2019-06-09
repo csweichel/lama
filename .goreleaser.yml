@@ -17,6 +17,8 @@ builds:
     - 386
     - amd64
     - arm
+  hooks:
+    post: /bin/bash ./build/pack-with-upx.sh
 archives:
 - replacements:
     darwin: Darwin
