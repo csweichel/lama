@@ -16,6 +16,10 @@ pre {
 p {
     width: 40vw;
 }
+a.btn {
+    margin-bottom: 0.5em;
+    display:block;
+}
 h2 {
     width: 100%;
     padding-bottom: 2em;
