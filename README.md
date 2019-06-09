@@ -35,3 +35,7 @@ All contributions/PR/issue/beer are welcome ❤️.
 It's easiest to develop _lama_ using Gitpod, a free one-click online IDE (who I happen to be working on):
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io#github.com/32leaves/lama)
+
+# Credits
+
+Logo based on work from [Vectors by Vecteezy](https://www.vecteezy.com).
