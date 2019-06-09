@@ -1,19 +1,24 @@
 @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
 body, pre {
-    color: #BFBFBF;
-    background-color: #3B4F51;
+    color: #293D39;
+    background-color: white;
     font-family: 'Source Code Pro', monospace;
 }
+#m {
+    display: flex;
+    flex-flow: row;
+}
 pre {
-    color: white;
+    color: #293D39;
+    padding-left: 1em;
+    margin-left: 1em;
 }
 p {
-    padding-top: 2em;
-    height: 60vh;
+    width: 40vw;
 }
 h2 {
     width: 100%;
-    text-align: center;
+    padding-bottom: 2em;
 }
 h2 div, a {
     color: #F29F05;
