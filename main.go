@@ -21,6 +21,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net/http"
 	"os"
@@ -48,7 +49,7 @@ func main() {
 	dir := pflag.StringP("directory", "d", ".", "the directory to serve")
 	local := pflag.BoolP("localhost", "l", false, "serve on localhost only")
 	version := pflag.BoolP("version", "v", false, "prints the version")
-	dontDump := pflag.BoolP("dont-dump", "N", false, "be less verbose and don't dump requests")
+	verbose := pflag.BoolP("dump", "V", false, "be verbose and dump requests")
 	dontServe := pflag.BoolP("dont-serve", "D", false, "don't serve any directy (ignores --directory)")
 	pflag.Parse()
 
@@ -58,8 +59,14 @@ func main() {
 	}
 
 	handler := &debugHandler{
-		DumpRequest: !*dontDump,
+		DumpRequest: *verbose,
 		Writer:      tabwriter.NewWriter(os.Stdout, 8, 0, 1, ' ', 0),
+		Logger:      make(chan *http.Request, 10),
+	}
+	go handler.logRequests()
+
+	if !*verbose {
+		go cli(handler)
 	}
 
 	fileStatement := ""
@@ -74,7 +81,7 @@ func main() {
 		addr = "127.0.0.1" + addr
 	}
 
-	fmt.Printf("This is %s serving %son %s\r\n\r\n", fgLama.Sprint("lama.sh"), fileStatement, addr)
+	fmt.Printf("This is %s serving %son %s\r\n", fgLama.Sprint("lama.sh"), fileStatement, addr)
 
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
@@ -87,52 +94,71 @@ type debugHandler struct {
 	Delegate    http.Handler
 	DumpRequest bool
 	Writer      *tabwriter.Writer
+	Logger      chan *http.Request
 }
 
 func (h *debugHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	h.logRequest(req, h.DumpRequest)
+	h.Logger <- req
 
 	if h.Delegate != nil {
 		h.Delegate.ServeHTTP(resp, req)
 	}
 }
 
-func (h *debugHandler) logRequest(req *http.Request, verbose bool) {
-	fmt.Printf("%s %s - %s %s\r\n",
-		fgMethod.Sprintf("%-7v", req.Method),
-		time.Now().Format(time.RFC3339),
-		req.Proto,
-		fgURL.Sprint(req.URL),
-	)
-	if !verbose {
-		return
-	}
-
-	headerPadding := fmt.Sprintf("%-8v", " ")
-
-	// from https://golang.org/src/net/http/httputil/dump.go?s=5638:5700#L219
-	absRequestURI := strings.HasPrefix(req.RequestURI, "http://") || strings.HasPrefix(req.RequestURI, "https://")
-	if !absRequestURI {
-		host := req.Host
-		if host == "" && req.URL != nil {
-			host = req.URL.Host
+func (h *debugHandler) logRequests() {
+	for {
+		req := <-h.Logger
+		fmt.Printf("%s %s - %s %s\r\n",
+			fgMethod.Sprintf("%-7v", req.Method),
+			time.Now().Format(time.RFC3339),
+			req.Proto,
+			fgURL.Sprint(req.URL),
+		)
+		if !h.DumpRequest {
+			continue
 		}
-		if host != "" {
-			fmt.Fprintf(h.Writer, "%s%s\t%s\r\n", headerPadding, fgHeader.Sprint("Host:"), host)
+
+		headerPadding := fmt.Sprintf("%-8v", " ")
+
+		// from https://golang.org/src/net/http/httputil/dump.go?s=5638:5700#L219
+		absRequestURI := strings.HasPrefix(req.RequestURI, "http://") || strings.HasPrefix(req.RequestURI, "https://")
+		if !absRequestURI {
+			host := req.Host
+			if host == "" && req.URL != nil {
+				host = req.URL.Host
+			}
+			if host != "" {
+				fmt.Fprintf(h.Writer, "%s%s\t%s\r\n", headerPadding, fgHeader.Sprint("Host:"), host)
+			}
 		}
-	}
 
-	if len(req.TransferEncoding) > 0 {
-		fmt.Fprintf(h.Writer, "%s%s\t%s\r\n", headerPadding, fgHeader.Sprint("Transfer-Encoding:"), strings.Join(req.TransferEncoding, ","))
-	}
-	if req.Close {
-		fmt.Fprintf(h.Writer, "%s%s\tclose\r\n", headerPadding, fgHeader.Sprint("Connection:"))
-	}
+		if len(req.TransferEncoding) > 0 {
+			fmt.Fprintf(h.Writer, "%s%s\t%s\r\n", headerPadding, fgHeader.Sprint("Transfer-Encoding:"), strings.Join(req.TransferEncoding, ","))
+		}
+		if req.Close {
+			fmt.Fprintf(h.Writer, "%s%s\tclose\r\n", headerPadding, fgHeader.Sprint("Connection:"))
+		}
 
-	for k, v := range req.Header {
-		fmt.Fprintf(h.Writer, "%s%s\t%s\r\n", headerPadding, fgHeader.Sprintf("%s:", k), strings.Join(v, ", "))
-	}
+		for k, v := range req.Header {
+			fmt.Fprintf(h.Writer, "%s%s\t%s\r\n", headerPadding, fgHeader.Sprintf("%s:", k), strings.Join(v, ", "))
+		}
 
-	h.Writer.Flush()
-	fmt.Println()
+		h.Writer.Flush()
+		fmt.Println()
+	}
+}
+
+func cli(handler *debugHandler) {
+	fmt.Print("press <enter> to enable verbose log output\r\n\r\n")
+	in := bufio.NewReader(os.Stdin)
+	for {
+		_, _, err := in.ReadRune()
+		if err != nil {
+			continue
+		}
+
+		handler.DumpRequest = true
+		fmt.Printf("%s %s - verbose logging enabled\r\n", fgLama.Sprint("lama.sh"), time.Now().Format(time.RFC3339))
+		break
+	}
 }
