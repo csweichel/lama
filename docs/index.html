@@ -33,38 +33,43 @@
 export platform="$(uname -s)_$(uname -m)"
 export lama=$HOME/.lama
 
+latestRelease=$(curl --silent -s https://api.github.com/repos/32leaves/lama/releases/latest \
+    | grep browser_download_url \
+    | grep $platform \
+    | cut -d : -f 2,3)
+
 export download=true
-if [ ! -f $lama ]; then
-    download=true
-elif [ `which sha256sum` ]; then
-    download=false
+if [ -f $lama ]; then
+    installedVersion=$($lama -v)
 
-    export latestChecksum=$(curl --silent -s https://api.github.com/repos/32leaves/lama/releases/latest \
-                    | grep browser_download_url \
-                    | grep checksums.txt \
-                    | cut -d : -f 2,3 \
-                    | xargs curl --silent -L \
-                    | grep $platform \
-                    | cut -d ' ' -f 1)
-    currentChecksum=$(sha256sum $lama | cut -d ' ' -f 1)
-
-    if [ $latestChecksum != $currentChecksum ]; then
+    if echo $latestRelease | grep $installedVersion >/dev/null; then
+        download=false
+    else
         download=true
     fi
-else
-    echo "No sha256sum found - skipping checksum checks"
-    download=true
 fi
 
 if [ "$download" = "true" ]; then
-    echo "Downloading latest lama version"
-    curl --silent -s https://api.github.com/repos/32leaves/lama/releases/latest \
-    | grep browser_download_url \
-    | grep $platform \
-    | cut -d : -f 2,3 \
-    | xargs curl --silent -L --output $lama
+    echo "Downloading latest lama version from$latestRelease"
+    echo $latestRelease | xargs curl -L --output $lama
 
     chmod +x $lama
+
+    if [ `which sha256sum` ]; then
+        export latestChecksum=$(curl --silent -s https://api.github.com/repos/32leaves/lama/releases/latest \
+                        | grep browser_download_url \
+                        | grep checksums.txt \
+                        | cut -d : -f 2,3 \
+                        | xargs curl --silent -L \
+                        | grep $platform \
+                        | cut -d ' ' -f 1)
+        currentChecksum=$(sha256sum $lama | cut -d ' ' -f 1)
+
+        if [ $latestChecksum != $currentChecksum ]; then
+            echo "checksum mismatch - will not start downloaded binary"
+            rm $lama
+        fi
+    fi
 fi
 
 # at least we can start lama itself
