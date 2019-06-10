@@ -60,7 +60,7 @@ if [ "$download" = "true" ]; then
                         | grep browser_download_url \
                         | grep checksums.txt \
                         | cut -d : -f 2,3 \
-                        | xargs curl --silent -L \
+                        | xargs curl --silent -s -L \
                         | grep $platform \
                         | cut -d ' ' -f 1)
         currentChecksum=$(sha256sum $lama | cut -d ' ' -f 1)
@@ -85,4 +85,5 @@ exec $lama $@
 #   causes the browser to render this script funny. But I want to be easy to read so that people
 #   can understand what's going on here.
 #
+# The last line has to be </div> as on OSX we're seeing the remainer of this script and need to filter that.
 # </div>

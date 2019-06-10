@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -65,10 +66,6 @@ func main() {
 	}
 	go handler.logRequests()
 
-	if !*verbose {
-		go cli(handler)
-	}
-
 	fileStatement := ""
 	if !*dontServe {
 		handler.Delegate = http.FileServer(http.Dir(*dir))
@@ -82,6 +79,9 @@ func main() {
 	}
 
 	fmt.Printf("This is %s serving %son %s\r\n", fgLama.Sprint("lama.sh"), fileStatement, addr)
+	if !*verbose {
+		go cli(handler)
+	}
 
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
@@ -149,12 +149,18 @@ func (h *debugHandler) logRequests() {
 }
 
 func cli(handler *debugHandler) {
-	fmt.Print("press <enter> to enable verbose log output\r\n\r\n")
 	in := bufio.NewReader(os.Stdin)
+
 	for {
-		_, _, err := in.ReadRune()
-		if err != nil {
-			continue
+		if runtime.GOOS == "darwin" {
+			// On OSX we'll eat the remainder of the download script which messes with this ReadLine mechanism.
+			// For now, we'll just always enable verbose logging on OSX.
+		} else {
+			fmt.Print("press <enter> to enable verbose log output\r\n\r\n")
+			_, _, err := in.ReadLine()
+			if err != nil {
+				continue
+			}
 		}
 
 		handler.DumpRequest = true
