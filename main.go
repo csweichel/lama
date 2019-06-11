@@ -21,11 +21,9 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"net/http"
 	"os"
-	"runtime"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -50,7 +48,7 @@ func main() {
 	dir := pflag.StringP("directory", "d", ".", "the directory to serve")
 	local := pflag.BoolP("localhost", "l", false, "serve on localhost only")
 	version := pflag.BoolP("version", "v", false, "prints the version")
-	verbose := pflag.BoolP("dump", "V", false, "be verbose and dump requests")
+	dontDump := pflag.BoolP("dont-dump", "V", false, "don't be verbose and do not dump requests")
 	dontServe := pflag.BoolP("dont-serve", "D", false, "don't serve any directy (ignores --directory)")
 	pflag.Parse()
 
@@ -60,7 +58,7 @@ func main() {
 	}
 
 	handler := &debugHandler{
-		DumpRequest: *verbose,
+		DumpRequest: !*dontDump,
 		Writer:      tabwriter.NewWriter(os.Stdout, 8, 0, 1, ' ', 0),
 		Logger:      make(chan *http.Request, 10),
 	}
@@ -78,11 +76,7 @@ func main() {
 		addr = "127.0.0.1" + addr
 	}
 
-	fmt.Printf("This is %s serving %son %s\r\n", fgLama.Sprint("lama.sh"), fileStatement, addr)
-	if !*verbose {
-		go cli(handler)
-	}
-
+	fmt.Printf("This is %s serving %son %s\r\n\r\n", fgLama.Sprint("lama.sh"), fileStatement, addr)
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
 		fmt.Printf("%s %s - %s\n", fgError.Sprint("ERROR"), time.Now().Format(time.RFC3339), err.Error())
@@ -145,26 +139,5 @@ func (h *debugHandler) logRequests() {
 
 		h.Writer.Flush()
 		fmt.Println()
-	}
-}
-
-func cli(handler *debugHandler) {
-	in := bufio.NewReader(os.Stdin)
-
-	for {
-		if runtime.GOOS == "darwin" {
-			// On OSX we'll eat the remainder of the download script which messes with this ReadLine mechanism.
-			// For now, we'll just always enable verbose logging on OSX.
-		} else {
-			fmt.Print("press <enter> to enable verbose log output\r\n\r\n")
-			_, _, err := in.ReadLine()
-			if err != nil {
-				continue
-			}
-		}
-
-		handler.DumpRequest = true
-		fmt.Printf("%s %s - verbose logging enabled\r\n", fgLama.Sprint("lama.sh"), time.Now().Format(time.RFC3339))
-		break
 	}
 }
