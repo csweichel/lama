@@ -22,7 +22,7 @@
 # SOFTWARE.
 # </div>
 
-# <link href="style.css" rel="stylesheet"><div id="m"><div id="c"><img id="l" src="lama.svg"><div><h2>curl lama.sh | sh</h2><h3>starts a web server</h3><p><a href="https://github.com/32leaves/lama">lama.sh</a> is a simple HTTP server that serves files, directories and verbosely logs requests. Running the line above will start an HTTP server. Wanna know how? Have a look at <a href="https://github.com/32leaves/lama/blob/master/docs/index.html">this page's source</a>.</p><div id="b"><a class="btn" href="https://github.com/32leaves/lama"><div><img src="github-logo.svg" height="20px"> View on GitHub</div></a><a href="https://gitpod.io/#github.com/32leaves/lama"><img src="https://gitpod.io/button/open-in-gitpod.svg"></a></div></div></div></div><div id="h">
+# <link href="style.css" rel="stylesheet"><div id="m"><div id="c"><img id="l" src="lama.svg"><div><h2>curl lama.sh | sh</h2><h3>starts a web server</h3><p><a href="https://github.com/csweichel/lama">lama.sh</a> is a simple HTTP server that serves files, directories and verbosely logs requests. Running the line above will start an HTTP server. Wanna know how? Have a look at <a href="https://github.com/csweichel/lama/blob/master/docs/index.html">this page's source</a>.</p><div id="b"><a class="btn" href="https://github.com/csweichel/lama"><div><img src="github-logo.svg" height="20px"> View on GitHub</div></a><a href="https://gitpod.io/#github.com/csweichel/lama"><img src="https://gitpod.io/button/open-in-gitpod.svg"></a></div></div></div></div><div id="h">
 
 #
 # This script downloads and starts a simple HTTP server that serves files, directories and verbosely logs requests.
@@ -56,7 +56,7 @@ if [ "$download" = "true" ]; then
     chmod +x $lama
 
     if [ `which sha256sum` ]; then
-        export latestChecksum=$(curl --silent -s https://api.github.com/repos/32leaves/lama/releases/latest \
+        export latestChecksum=$(curl --silent -s https://api.github.com/repos/csweichel/lama/releases/latest \
                         | grep browser_download_url \
                         | grep checksums.txt \
                         | cut -d : -f 2,3 \
