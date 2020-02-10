@@ -33,7 +33,7 @@
 export platform="$(uname -s)_$(uname -m)"
 export lama=$HOME/.lama
 
-latestRelease=$(curl --silent -s https://api.github.com/repos/32leaves/lama/releases/latest \
+latestRelease=$(curl -L --silent -s https://api.github.com/repos/csweichel/lama/releases/latest \
     | grep browser_download_url \
     | grep $platform \
     | cut -d : -f 2,3)
