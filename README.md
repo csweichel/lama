@@ -25,8 +25,13 @@ Usage of lama:
   -N, --dont-dump          be less verbose and don't dump requests
   -D, --dont-serve         don't serve any directy (ignores --directory)
   -l, --localhost          serve on localhost only
-  -p, --port string        port to serve on (default "8080")
+  -p, --port string        port to serve on, respects LAMA_PORT envvar (default "8080")
   -v, --version            prints the version
+```
+
+Some flags can be set as environment variables, like so:
+```
+curl lama.sh | LAMA_PORT=8888 sh
 ```
 
 # How to contribute

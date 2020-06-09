@@ -44,7 +44,11 @@ var (
 )
 
 func main() {
-	port := pflag.StringP("port", "p", "8080", "port to serve on")
+	defaultPort := os.Getenv("LAMA_PORT")
+	if len(defaultPort) == 0 {
+		defaultPort = "8080"
+	}
+	port := pflag.StringP("port", "p", defaultPort, "port to serve on, respects LAMA_PORT envvar")
 	dir := pflag.StringP("directory", "d", ".", "the directory to serve")
 	local := pflag.BoolP("localhost", "l", false, "serve on localhost only")
 	version := pflag.BoolP("version", "v", false, "prints the version")
