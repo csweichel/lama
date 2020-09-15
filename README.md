@@ -14,11 +14,14 @@ This project has two main qualities:
 
 ## Configuration
 `server` sports a few command-line flags which configure its behaviour. To pass those flags use
-```
+
+```shell
 $ curl lama.sh | sh -s -- <flags>
 ```
+
 For example to print the list of available flags
-```
+
+```shell
 $ curl lama.sh | sh -s -- --help
 Usage of lama:
   -d, --directory string   the directory to serve (default ".")
@@ -30,8 +33,44 @@ Usage of lama:
 ```
 
 Some flags can be set as environment variables, like so:
-```
+
+```shell
 curl lama.sh | LAMA_PORT=8888 sh
+```
+
+# Run the Server
+
+```shell
+git clone https://github.com/csweichel/lama && cd lama
+```
+
+## with go
+
+```shell
+go run main.go
+```
+
+## with binary 
+
+```shell
+curl https://github.com/csweichel/lama/releases/download/v0.3.0/lama_0.3.0_Linux_x86_64 -o server
+chmod +x server
+./server
+```
+
+## with Docker
+
+```shell
+docker build -t lama:latest .
+docker run --rm -p 8080:8080 lama:latest
+```
+
+lama.sh is now located under http://localhost:8080/docs/
+
+to start lama.sh with you selfhosted server, just replace the url
+
+```shell
+curl  http://localhost:8080/docs/ | sh
 ```
 
 # How to contribute
