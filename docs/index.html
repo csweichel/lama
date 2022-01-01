@@ -33,47 +33,51 @@
 export platform="$(uname -s)_$(uname -m)"
 export lama=$HOME/.lama
 
-latestRelease=$(curl -L --silent -s https://api.github.com/repos/csweichel/lama/releases/latest \
-    | grep browser_download_url \
-    | grep $platform \
-    | cut -d : -f 2,3)
+setup_lama() {
+    latestRelease=$(curl -L --silent -s https://api.github.com/repos/csweichel/lama/releases/latest \
+        | grep browser_download_url \
+        | grep $platform \
+        | cut -d : -f 2,3)
 
-export download=true
-if [ -f $lama ]; then
-    installedVersion=$($lama -v)
+    export download=true
+    if [ -f $lama ]; then
+        installedVersion=$($lama -v)
 
-    if echo $latestRelease | grep $installedVersion >/dev/null; then
-        download=false
-    else
-        download=true
-    fi
-fi
-
-if [ "$download" = "true" ]; then
-    echo "Downloading latest lama version from$latestRelease"
-    echo $latestRelease | xargs curl -L --output $lama
-
-    chmod +x $lama
-
-    if [ `which sha256sum` ]; then
-        export latestChecksum=$(curl --silent -s https://api.github.com/repos/csweichel/lama/releases/latest \
-                        | grep browser_download_url \
-                        | grep checksums.txt \
-                        | cut -d : -f 2,3 \
-                        | xargs curl --silent -s -L \
-                        | grep $platform \
-                        | cut -d ' ' -f 1)
-        currentChecksum=$(sha256sum $lama | cut -d ' ' -f 1)
-
-        if [ $latestChecksum != $currentChecksum ]; then
-            echo "checksum mismatch - will not start downloaded binary"
-            rm $lama
+        if echo $latestRelease | grep $installedVersion >/dev/null; then
+            download=false
+        else
+            download=true
         fi
     fi
-fi
 
-# at least we can start lama itself
-exec $lama $@
+    if [ "$download" = "true" ]; then
+        echo "Downloading latest lama version from$latestRelease"
+        echo $latestRelease | xargs curl -L --output $lama
+
+        chmod +x $lama
+
+        if [ `which sha256sum` ]; then
+            export latestChecksum=$(curl --silent -s https://api.github.com/repos/csweichel/lama/releases/latest \
+                            | grep browser_download_url \
+                            | grep checksums.txt \
+                            | cut -d : -f 2,3 \
+                            | xargs curl --silent -s -L \
+                            | grep $platform \
+                            | cut -d ' ' -f 1)
+            currentChecksum=$(sha256sum $lama | cut -d ' ' -f 1)
+
+            if [ $latestChecksum != $currentChecksum ]; then
+                echo "checksum mismatch - will not start downloaded binary"
+                rm $lama
+            fi
+        fi
+    fi
+
+    # at least we can start lama itself
+    exec $lama $@
+}
+
+setup_lama
 
 #
 # Why is this called index.html?
