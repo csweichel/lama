@@ -14,7 +14,6 @@ builds:
     - darwin
     - windows
   goarch:
-    - 386
     - amd64
     - arm
   hooks:
@@ -24,7 +23,6 @@ archives:
     darwin: Darwin
     linux: Linux
     windows: Windows
-    386: i386
     amd64: x86_64
   format: binary
 checksum:
