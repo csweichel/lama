@@ -33,10 +33,7 @@
 export platform="$(uname -s)_$(uname -m)"
 export lama=$HOME/.lama
 
-latestRelease=$(curl -L --silent -s https://api.github.com/repos/csweichel/lama/releases/latest \
-    | grep browser_download_url \
-    | grep $platform \
-    | cut -d : -f 2,3)
+latestRelease=$(curl -sfL -o /dev/null -w %{url_effective} "https://github.com/csweichel/lama/releases/latest" | rev | cut -f1 -d'/'| rev)
 
 export download=true
 if [ -f $lama ]; then
