@@ -33,7 +33,10 @@
 export platform="$(uname -s)_$(uname -m)"
 export lama=$HOME/.lama
 
-latestRelease=$(curl -sfL -o /dev/null -w %{url_effective} "https://github.com/csweichel/lama/releases/latest" | rev | cut -f1 -d'/'| rev)
+latestRelease=$(curl -L --silent -s https://api.github.com/repos/csweichel/lama/releases/latest \
+    | grep browser_download_url \
+    | grep $platform \
+    | cut -d : -f 2,3)
 
 export download=true
 if [ -f $lama ]; then
@@ -65,6 +68,7 @@ if [ "$download" = "true" ]; then
         if [ $latestChecksum != $currentChecksum ]; then
             echo "checksum mismatch - will not start downloaded binary"
             rm $lama
+            exit -1
         fi
     fi
 fi
