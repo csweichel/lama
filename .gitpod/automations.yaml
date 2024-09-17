@@ -1,0 +1,8 @@
+tasks:
+    buildCode:
+        name: Build Cde
+        command: |
+            go build
+        triggeredBy:
+        - postDevcontainerStart
+        - manual
