@@ -1,0 +1,23 @@
+tasks:
+  install-deps:
+    name: Install Go Dependencies
+    description: Download Go module dependencies
+    command: |
+      go mod download
+    triggeredBy:
+      - postDevcontainerStart
+
+services:
+  dev-server:
+    name: Lama Development Server
+    commands:
+      start: |
+        go run main.go
+      ready: |
+        until curl -s http://localhost:8080 > /dev/null; do
+          echo "Waiting for lama server to start..."
+          sleep 1
+        done
+        echo "Lama server is ready at http://localhost:8080"
+    triggeredBy:
+      - manual

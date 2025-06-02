@@ -1,0 +1,14 @@
+{
+	"name": "Lama Go Development",
+	"build": {
+		"context": ".",
+		"dockerfile": "Dockerfile"
+	},
+	"forwardPorts": [8080],
+	"portsAttributes": {
+		"8080": {
+			"label": "Lama HTTP Server",
+			"description": "Local development server for testing the lama file server"
+		}
+	}
+}
