@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/go:1.18
+FROM mcr.microsoft.com/devcontainers/go:1.22
 
 # Install build tools required for lama development
 RUN cd /tmp && \
