@@ -1,6 +1,6 @@
 module github.com/csweichel/lama
 
-go 1.22
+go 1.24.4
 
 require (
 	github.com/fatih/color v1.9.0

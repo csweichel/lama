@@ -1,3 +1,5 @@
+image: gitpod/workspace-go:1.24.4
+
 ports:
 - port: 8080
 checkoutLocation: lama
